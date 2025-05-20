@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizational Structure</title>
+  <style>
+    /* General Body and Layout */
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.6; /* Improved readability */
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      flex: 1;
+      width: 100%; /* Ensure container takes full width on smaller screens */
+      box-sizing: border-box; /* Include padding in width */
+    }
+
+    /* Heading */
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap; /* Allow search elements to wrap on small screens */
+    }
+
+    .search-bar input {
+      padding: 10px;
+      width: 300px;
+      max-width: 100%; /* Prevent overflow on small screens */
+      border: 2px solid #3498db;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box; /* Include padding and border in width */
+    }
+
+    .search-bar button {
+      padding: 10px 20px;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease; /* Smooth transition */
+    }
+
+    .search-bar button:hover {
+      background: #2980b9;
+    }
+
+    /* Organizational Tree Structure */
+    .tree {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Boxes for Regions, Branches, and Departments */
+    .region-box, .branch-box, .dept-box {
+      background: #3498db;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin: 10px;
+      cursor: pointer;
+      position: relative;
+      text-align: center;
+      width: 150px; /* Increased width slightly */
+      box-sizing: border-box;
+      transition: background 0.3s ease;
+    }
+
+    .region-box:hover, .branch-box:hover, .dept-box:hover {
+      background: #2980b9;
+    }
+
+    .branch-box {
+      background: #e67e22; /* Orange */
+    }
+
+    .dept-box {
+      background: #2ecc71; /* Green */
+    }
+
+    /* Containers for Branches and Departments (within the tree) */
+    .branches-container, .depts-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+      margin-top: 20px;
+      width: 100%; /* Allow containers to take full width */
+    }
+
+    /* Staff Lists within Boxes */
+    .branch-box ul, .dept-box ul {
+      display: none; /* Hidden by default */
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      list-style: none;
+      z-index: 10;
+      width: 220px; /* Increased width for staff list */
+      max-height: 250px; /* Increased max height */
+      overflow-y: auto;
+      text-align: left; /* Align staff list text to the left */
+      color: #333; /* Ensure text color is readable */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
+    }
+
+    .branch-box ul.active, .dept-box ul.active {
+      display: block; /* Shown when active */
+    }
+
+    .branch-box li, .dept-box li {
+      padding: 8px 0; /* Increased padding */
+      cursor: pointer;
+      border-bottom: 1px solid #eee; /* Separator line */
+    }
+
+    .branch-box li:last-child, .dept-box li:last-child {
+      border-bottom: none; /* No border for the last item */
+    }
+
+    .branch-box li:hover, .dept-box li:hover {
+      background: #f8f8f8; /* Lighter hover background */
+    }
+
+    /* Arrows connecting tree nodes */
+    .arrow {
+      position: absolute;
+      width: 2px;
+      background: #333;
+      height: 20px;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .arrow::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #333;
+    }
+
+    /* Popup for Staff Details */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      width: 400px;
+      max-width: 90vw; /* Responsive width */
+      max-height: 80vh;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      border-bottom: 1px solid #eee; /* Separator */
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .popup p {
+      margin: 10px 0;
+    }
+
+    .popup button, .admin-panel button {
+      background: #e74c3c; /* Red */
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: 10px; /* Add some space above buttons */
+    }
+
+    .popup button:hover, .admin-panel button:hover {
+      background: #c0392b; /* Darker red */
+    }
+
+    /* Admin Panel */
+    .admin-panel {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* No rotation on large screens */
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      padding: 20px; /* Increased padding */
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: 600px;
+      max-width: 95vw; /* Responsive width */
+      height: auto; /* Auto height for better content fitting */
+      overflow-y: auto; /* Allow scrolling if content overflows */
+      display: flex;
+      flex-direction: column; /* Stack elements vertically */
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .admin-panel h2 {
+      color: #2c3e50;
+      font-size: 1.5em; /* Slightly larger heading */
+      text-align: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ccc; /* Separator */
+      padding-bottom: 10px;
+      width: 100%; /* Full width for heading */
+    }
+
+    .admin-panel form {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap; /* Allow form elements to wrap */
+      justify-content: center; /* Center form elements */
+      gap: 10px;
+      width: 100%;
+    }
+
+    .admin-panel .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: calc(50% - 10px); /* Two items per row with gap */
+        box-sizing: border-box;
+    }
+
+     .admin-panel .form-group label {
+        font-size: 0.9em;
+        color: #555;
+        margin-bottom: 4px;
+     }
+
+
+    .admin-panel input, .admin-panel select {
+      width: 100%; /* Full width within form group */
+      padding: 10px; /* Increased padding */
+      border: 1px solid #3498db;
+      border-radius: 5px;
+      box-sizing: border-box;
+      background: #fff;
+      font-size: 1em;
+    }
+
+    .admin-panel button {
+      width: auto; /* Auto width for buttons */
+      padding: 10px 15px;
+      margin: 5px; /* Adjusted margin */
+    }
+
+    .admin-panel input[type="file"] {
+        width: auto; /* Auto width for file input */
+        padding: 5px;
+        border: none;
+        background: none;
+    }
+
+
+    /* Overlay for Popups/Admin Panel */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    /* Error Messages */
+    .error {
+      color: #e74c3c;
+      font-size: 0.8em; /* Smaller font size */
+      display: none;
+      width: 100%;
+      text-align: left;
+      margin-top: 2px; /* Adjusted spacing */
+      margin-bottom: 5px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #2c3e50;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    /* Control Buttons */
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+      display: flex; /* Use flex for control buttons */
+      justify-content: center;
+      gap: 10px; /* Space between buttons */
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+        padding: 10px 15px;
+        background: #3498db;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .controls button:hover {
+        background: #2980b9;
+    }
+
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .search-bar input {
+        width: 100%;
+      }
+
+      .search-bar button {
+        width: 100%;
+      }
+
+      .region-box, .branch-box, .dept-box {
+        width: 100px; /* Slightly smaller boxes on small screens */
+      }
+
+      .branches-container, .depts-container {
+        flex-direction: column; /* Stack branches/depts vertically */
+        align-items: center;
+        gap: 10px; /* Reduced gap */
+      }
+
+      .branch-box ul, .dept-box ul {
+        width: 180px; /* Smaller staff list width */
+      }
+
+      .popup {
+        width: 95vw;
+        padding: 15px;
+      }
+
+      .admin-panel {
+        width: 95vw;
+        padding: 15px;
+        transform: translate(-50%, -50%); /* Ensure no rotation */
+      }
+
+      .admin-panel form {
+        flex-direction: column; /* Stack form elements vertically */
+        gap: 8px; /* Reduced gap */
+      }
+
+      .admin-panel .form-group {
+          width: 100%; /* Full width for form groups */
+      }
+
+      .admin-panel input, .admin-panel select, .admin-panel button {
+        width: 100%;
+      }
+
+      .admin-panel h2 {
+        font-size: 1.3em;
+      }
+
+      .error {
+        font-size: 0.7em;
+      }
+
+      .controls {
+          flex-direction: column;
+          gap: 8px;
+      }
+
+       .controls button {
+           width: 100%;
+       }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay"></div>
+  <div class="container">
+    <h1>Organizational Structure</h1>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by name, staff no, phone, or NIC" oninput="updateSearchResults()">
+      <button onclick="showSearchResults()">Search</button>
+    </div>
+    <div class="tree" id="orgTree">
+      </div>
+    <div class="controls">
+      <button onclick="showAll()">Show All</button>
+      <button onclick="resetView()">Reset</button>
+      <button onclick="showAdminPanel()">Admin Panel</button>
+    </div>
+  </div>
+
+  <div class="popup" id="staffPopup">
+    <h2>Staff Details</h2>
+    <p id="staffDetails"></p>
+    <button onclick="hidePopup()">Close</button>
+  </div>
+
+  <div class="admin-panel" id="adminPanel">
+    <h2>Admin Panel</h2>
+    <form id="adminForm">
+      <div class="form-group">
+        <label for="deptSelect">Department:</label>
+        <select id="deptSelect" onchange="updateBranchSelect(); autoFillStaff();">
+          <option value="">Select Department</option>
+          <option value="Regional Manager">Regional Manager</option>
+          <option value="Area Office">Area Office</option>
+          <option value="SME HUB">SME HUB</option>
+          <option value="Operation">Operation</option>
+          <option value="Credit">Credit</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="branchSelectStaff">Branch:</label>
+        <select id="branchSelectStaff" onchange="autoFillStaff();">
+          <option value="">Select Branch</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="staffNo">Staff No:</label>
+        <input type="text" id="staffNo" placeholder="Staff No (5 digits)" oninput="autoFillStaff()">
+        <div class="error" id="staffNoError"></div>
+      </div>
+       <div class="form-group">
+        <label for="staffName">Name:</label>
+        <input type="text" id="staffName" placeholder="Name">
+        <div class="error" id="staffNameError"></div>
+      </div>
+      <div class="form-group">
+        <label for="staffDesignation">Designation:</label>
+        <input type="text" id="staffDesignation" placeholder="Designation">
+        <div class="error" id="staffDesignationError"></div>
+      </div>
+      <div class="form-group">
+        <label for="staffAddress">Address:</label>
+        <input type="text" id="staffAddress" placeholder="Address">
+        <div class="error" id="staffAddressError"></div>
+      </div>
+      <div class="form-group">
+        <label for="staffEmail">Email:</label>
+        <input type="text" id="staffEmail" placeholder="Email">
+        <div class="error" id="staffEmailError"></div>
+      </div>
+      <div class="form-group">
+        <label for="staffContact">Contact:</label>
+        <input type="text" id="staffContact" placeholder="Contact (10 digits)">
+        <div class="error" id="staffContactError"></div>
+      </div>
+      <div class="form-group">
+        <label for="staffDob">Date of Birth:</label>
+        <input type="text" id="staffDob" placeholder="Date of Birth (dd-mm-yyyy)">
+        <div class="error" id="staffDobError"></div>
+      </div>
+      <div class="form-group">
+        <label for="staffNic">NIC:</label>
+        <input type="text" id="staffNic" placeholder="NIC (max 10 chars)">
+        <div class="error" id="staffNicError"></div>
+      </div>
+      <button type="button" onclick="addStaff()">Add Staff</button>
+      <button type="button" onclick="updateStaff()">Update Staff</button>
+      <button type="button" onclick="deleteStaff()">Delete Staff</button>
+      <button type="button" onclick="logout()">Close Panel</button>
+      <div class="form-group">
+         <label for="csvFile">Upload CSV:</label>
+         <input type="file" id="csvFile" accept=".csv">
+      </div>
+      <button type="button" onclick="uploadCSV()">Process CSV</button>
+    </form>
+  </div>
+
+  <footer>© 2025 @ranorius as of 20.05.2025</footer>
+
+  <script>
+    // Load organizational data from local storage or use default data
+    let orgData = JSON.parse(localStorage.getItem('orgData')) || {
+      regions: [
+        {
+          name: "East",
+          departments: [
+            { name: "Regional Manager", staff: [] },
+            { name: "Area Office", staff: [] },
+            { name: "SME HUB", staff: [] }
+          ],
+          branches: [
+            {
+              abbr: "TCO", name: "Trincomalee",
+              departments: [
+                { name: "Operation", staff: [
+                  { staffNo: "S001", name: "John Doe", designation: "Deputy Branch Manager", address: "123 Main St", email: "john@example.com", contact: "5551234567", dob: "01-01-1980", nic: "A1234567" },
+                  { staffNo: "S002", name: "Jane Smith", designation: "Current Account Officer", address: "456 Oak Ave", email: "jane@example.com", contact: "5557654321", dob: "15-02-1985", nic: "B9876543" },
+                  { staffNo: "S003", name: "Alice Brown", designation: "Savings Officer", address: "789 Pine Rd", email: "alice@example.com", contact: "5559876543", dob: "20-03-1990", nic: "C7654321" },
+                  { staffNo: "S004", name: "Bob Green", designation: "Counter Staff", address: "101 Elm St", email: "bob@example.com", contact: "5554567890", dob: "25-04-1995", nic: "D1234567" },
+                  { staffNo: "S005", name: "Carol White", designation: "Teller", address: "202 Maple Ave", email: "carol@example.com", contact: "5553216549", dob: "30-05-1992", nic: "E9876543" }
+                ]},
+                { name: "Credit", staff: [
+                  { staffNo: "S006", name: "Mike Johnson", designation: "Branch Manager", address: "303 Oak St", email: "mike@example.com", contact: "5556543210", dob: "10-06-1982", nic: "F4567890" },
+                  { staffNo: "S007", name: "Sarah Davis", designation: "Credit Officer", address: "404 Pine Rd", email: "sarah@example.com", contact: "5557890123", dob: "15-07-1987", nic: "G1234567" },
+                  { staffNo: "S008", name: "Tom Lee", designation: "Credit Assistant", address: "505 Elm St", email: "tom@example.com", contact: "5552345678", dob: "20-08-1993", nic: "H9876543" }
+                ]}
+              ]
+            },
+            { abbr: "BCL", name: "Batticaloa", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "CNK", name: "Chenkalady", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "KKY", name: "Kattankudy", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "KWK", name: "Kalawanchikudy", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "KMN", name: "Kalmunai", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "SMT", name: "Sammanthurai", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "AKP", name: "Akkaraipattu", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "PVL", name: "Pottuvil", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "AMP", name: "Ampara", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] }
+          ]
+        }
+      ]
+    };
+
+    // Save current organizational data to local storage
+    function saveData() {
+      localStorage.setItem('orgData', JSON.stringify(orgData));
+    }
+
+    // Render the organizational tree structure
+    function renderTree(filter = '') {
+      const tree = document.getElementById('orgTree');
+      tree.innerHTML = ''; // Clear existing tree
+
+      // Create and append the main "East" region box
+      const eastBox = document.createElement('div');
+      eastBox.id = 'eastBox';
+      eastBox.className = 'region-box';
+      eastBox.innerHTML = "East";
+      eastBox.onclick = () => toggleEast();
+      eastBox.style.display = 'block'; // Always display the "East" box
+
+      // Create container for regional departments (Regional Manager, Area Office, SME HUB)
+      const regMgrDeptsContainer = document.createElement('div');
+      regMgrDeptsContainer.className = 'depts-container';
+      regMgrDeptsContainer.id = 'regMgrDepts';
+      regMgrDeptsContainer.style.display = 'flex'; // Initially display regional departments
+
+      // Add Regional Manager department box
+      const regionalMgrDept = document.createElement('div');
+      regionalMgrDept.className = 'dept-box';
+      regionalMgrDept.innerHTML = "Regional Manager";
+      regionalMgrDept.onclick = (e) => {
+        e.stopPropagation(); // Prevent triggering parent toggleEast
+        toggleStaff("East", "Regional Manager", null); // Toggle staff for Regional Manager
+      };
+      const regMgrArrow = document.createElement('div');
+      regMgrArrow.className = 'arrow';
+      regionalMgrDept.appendChild(regMgrArrow);
+
+      // Add staff list for Regional Manager
+      const regionalMgrStaffUl = document.createElement('ul');
+      const regionalMgrDeptData = orgData.regions[0].departments.find(d => d.name === "Regional Manager");
+      if (regionalMgrDeptData) {
+          regionalMgrDeptData.staff.forEach(staff => {
+            // Apply filter to staff list
+            if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
+              const staffLi = document.createElement('li');
+              staffLi.innerHTML = `${staff.name} (${staff.designation})`;
+              staffLi.onclick = () => showStaffDetails("East", null, staff.staffNo);
+              regionalMgrStaffUl.appendChild(staffLi);
+            }
+          });
+      }
+      regionalMgrDept.appendChild(regionalMgrStaffUl);
+      regMgrDeptsContainer.appendChild(regionalMgrDept);
+
+
+      // Add other regional departments (Area Office, SME HUB)
+      orgData.regions[0].departments.forEach(dept => {
+        if (dept.name !== "Regional Manager") { // Exclude Regional Manager as it's added separately
+          const deptDiv = document.createElement('div');
+          deptDiv.className = 'dept-box';
+          deptDiv.innerHTML = dept.name;
+          deptDiv.onclick = (e) => {
+            e.stopPropagation();
+            toggleStaff("East", dept.name, null); // Toggle staff for other regional departments
+          };
+          const arrow = document.createElement('div');
+          arrow.className = 'arrow';
+          deptDiv.appendChild(arrow);
+          const staffUl = document.createElement('ul');
+          dept.staff.forEach(staff => {
+            // Apply filter to staff list
+            if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
+              const staffLi = document.createElement('li');
+              staffLi.innerHTML = `${staff.name} (${staff.designation})`;
+              staffLi.onclick = () => showStaffDetails("East", null, staff.staffNo);
+              staffUl.appendChild(staffLi);
+            }
+          });
+          deptDiv.appendChild(staffUl);
+          regMgrDeptsContainer.appendChild(deptDiv);
+        }
+      });
+
+      // Create container for branches
+      const branchesContainer = document.createElement('div');
+      branchesContainer.className = 'branches-container';
+      branchesContainer.id = 'branches-East';
+      branchesContainer.style.display = 'flex'; // Initially display branches
+
+      // Add each branch and its departments
+      orgData.regions[0].branches.forEach(branch => {
+        const branchDiv = document.createElement('div');
+        branchDiv.className = 'branch-box';
+        branchDiv.innerHTML = `${branch.abbr} (${branch.name})`;
+        branchDiv.onclick = (e) => {
+          e.stopPropagation();
+          toggleBranch(branch.abbr); // Toggle departments within this branch
+        };
+        const arrow = document.createElement('div');
+        arrow.className = 'arrow';
+        branchDiv.appendChild(arrow);
+
+        const deptsContainer = document.createElement('div');
+        deptsContainer.className = 'depts-container';
+        deptsContainer.id = `depts-${branch.abbr}`;
+        deptsContainer.style.display = 'flex'; // Initially display departments within branches
+
+        branch.departments.forEach(dept => {
+          const deptDiv = document.createElement('div');
+          deptDiv.className = 'dept-box';
+          deptDiv.innerHTML = dept.name;
+          deptDiv.onclick = (e) => {
+            e.stopPropagation();
+            toggleStaff("East", dept.name, branch.abbr); // Toggle staff for this department in this branch
+          };
+          const arrowDept = document.createElement('div');
+          arrowDept.className = 'arrow';
+          deptDiv.appendChild(arrowDept);
+          const staffUl = document.createElement('ul');
+          dept.staff.forEach(staff => {
+            // Apply filter to staff list
+            if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
+              const staffLi = document.createElement('li');
+              staffLi.innerHTML = `${staff.name} (${staff.designation})`;
+              staffLi.onclick = () => showStaffDetails("East", branch.abbr, staff.staffNo);
+              staffUl.appendChild(staffLi);
+            }
+          });
+          deptDiv.appendChild(staffUl);
+          deptsContainer.appendChild(deptDiv);
+        });
+        branchDiv.appendChild(deptsContainer);
+        branchesContainer.appendChild(branchDiv);
+      });
+
+      // Append all elements to the tree container
+      tree.appendChild(eastBox);
+      tree.appendChild(regMgrDeptsContainer);
+      tree.appendChild(branchesContainer);
+
+      // If a filter is applied, ensure relevant containers are visible
+      if (filter !== '') {
+          document.getElementById('eastBox').style.display = 'block';
+          document.getElementById('regMgrDepts').style.display = 'flex';
+          document.getElementById('branches-East').style.display = 'flex';
+          document.querySelectorAll('.depts-container').forEach(dc => dc.style.display = 'flex');
+          document.querySelectorAll('ul').forEach(ul => ul.classList.add('active'));
+      }
+    }
+
+    // Toggle visibility of regional departments and branches
+    function toggleEast() {
+      const regMgrDepts = document.getElementById('regMgrDepts');
+      const branches = document.getElementById('branches-East');
+      const isHidden = regMgrDepts.style.display === 'none';
+
+      regMgrDepts.style.display = isHidden ? 'flex' : 'none';
+      branches.style.display = isHidden ? 'flex' : 'none';
+
+      // If hiding, also hide all sub-elements (department containers and staff lists)
+      if (!isHidden) {
+        regMgrDepts.querySelectorAll('ul').forEach(ul => ul.classList.remove('active'));
+        branches.querySelectorAll('.depts-container').forEach(dc => dc.style.display = 'none');
+        branches.querySelectorAll('ul').forEach(ul => ul.classList.remove('active'));
+      } else {
+         // If showing, ensure department containers are visible within branches
+         branches.querySelectorAll('.depts-container').forEach(dc => dc.style.display = 'flex');
+      }
+    }
+
+     // Toggle staff list visibility for the Regional Manager department
+    function toggleRegMgr() {
+      const regionalMgrDeptDiv = document.querySelector('#regMgrDepts .dept-box:first-child');
+      const ul = regionalMgrDeptDiv ? regionalMgrDeptDiv.querySelector('ul') : null;
+      if (ul) {
+        ul.classList.toggle('active');
+      }
+    }
+
+
+    // Toggle visibility of departments within a specific branch
+    function toggleBranch(branchAbbr) {
+      const deptsContainer = document.getElementById(`depts-${branchAbbr}`);
+      if (deptsContainer) {
+        const isHidden = deptsContainer.style.display === 'none';
+        deptsContainer.style.display = isHidden ? 'flex' : 'none';
+
+        // If hiding, also hide all staff lists within this branch's departments
+        if (!isHidden) {
+          deptsContainer.querySelectorAll('ul').forEach(ul => ul.classList.remove('active'));
+        }
+      }
+    }
+
+    // Toggle staff list visibility for a specific department (regional or in a branch)
+    function toggleStaff(regionName, deptName, branchAbbr) {
+      let staffUl = null;
+      const region = orgData.regions.find(r => r.name === regionName);
+
+      if (region) {
+        if (branchAbbr) {
+          const branch = region.branches.find(b => b.abbr === branchAbbr);
+          if (branch) {
+            // Use a more robust way to find the department div, e.g., by ID if available or by iterating
+            const deptDiv = document.querySelector(`#depts-${branchAbbr} .dept-box:contains("${deptName}")`);
+             staffUl = deptDiv ? deptDiv.querySelector('ul') : null;
+          }
+        } else {
+          const deptDiv = document.querySelector(`#regMgrDepts .dept-box:contains("${deptName}")`);
+          staffUl = deptDiv ? deptDiv.querySelector('ul') : null;
+        }
+      }
+
+      if (staffUl) {
+        staffUl.classList.toggle('active');
+      }
+    }
+
+    // Show staff details in a popup
+    function showStaffDetails(regionName, branchAbbr, staffNo) {
+      const region = orgData.regions.find(r => r.name === regionName);
+      let staff = null;
+
+      if (region) {
+        if (branchAbbr) {
+          const branch = region.branches.find(b => b.abbr === branchAbbr);
+          if (branch) {
+            staff = branch.departments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+          }
+        } else {
+          staff = region.departments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+        }
+      }
+
+      // Populate and display the staff details popup
+      const staffDetailsElement = document.getElementById('staffDetails');
+      const staffPopup = document.getElementById('staffPopup');
+      const overlay = document.getElementById('overlay');
+
+      if (staff) {
+        staffDetailsElement.innerHTML = `
+          <strong>Staff No:</strong> ${staff.staffNo || 'N/A'}<br>
+          <strong>Name:</strong> ${staff.name || 'N/A'}<br>
+          <strong>Designation:</strong> ${staff.designation || 'N/A'}<br>
+          <strong>Address:</strong> ${staff.address || 'N/A'}<br>
+          <strong>Email:</strong> ${staff.email || 'N/A'}<br>
+          <strong>Contact:</strong> ${staff.contact || 'N/A'}<br>
+          <strong>Date of Birth:</strong> ${staff.dob || 'N/A'}<br>
+          <strong>NIC:</strong> ${staff.nic || 'N/A'}
+        `;
+        staffPopup.style.display = 'block';
+        overlay.style.display = 'block';
+      } else {
+        alert('Staff details not found.');
+      }
+    }
+
+    // Hide the staff details popup
+    function hidePopup() {
+      document.getElementById('staffPopup').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+
+    // Show the admin panel
+    function showAdminPanel() {
+      document.getElementById('adminPanel').style.display = 'flex'; // Use flex to match CSS
+      document.getElementById('overlay').style.display = 'block';
+      populateBranchSelect(); // Populate branch dropdown based on initial department selection
+      clearForm(); // Clear form on panel open
+    }
+
+    // Hide the admin panel
+    function logout() { // Renamed from logout to better reflect action
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+      clearForm(); // Clear form on panel close
+    }
+
+    // Update the branch select dropdown based on the selected department
+    function updateBranchSelect() {
+      const dept = document.getElementById('deptSelect').value;
+      const branchSelect = document.getElementById('branchSelectStaff');
+      branchSelect.innerHTML = '<option value="">Select Branch</option>'; // Reset branch options
+
+      // Enable branch selection only for "Operation" and "Credit" departments
+      if (dept === "Operation" || dept === "Credit") {
+        branchSelect.disabled = false;
+        orgData.regions[0].branches.forEach(branch => {
+          branchSelect.innerHTML += `<option value="${branch.abbr}">${branch.abbr} (${branch.name})</option>`;
+        });
+      } else {
+        branchSelect.disabled = true; // Disable if not 'Operation' or 'Credit'
+      }
+    }
+
+    // Populate the branch select dropdown (called on admin panel load)
+    function populateBranchSelect() {
+      updateBranchSelect(); // Simply call updateBranchSelect
+    }
+
+    // Auto-fill staff details in the admin form based on Staff No, Department, and Branch
+    function autoFillStaff() {
+      const staffNo = document.getElementById('staffNo').value.trim();
+      const dept = document.getElementById('deptSelect').value;
+      const branchAbbr = document.getElementById('branchSelectStaff').value;
+
+      // Clear fields if staffNo or dept is empty
+      if (!staffNo || !dept) {
+        clearFormFieldsExceptStaffNoAndSelections();
+        return;
+      }
+
+      let staff = null;
+      const region = orgData.regions[0]; // Assuming 'East' is the only region
+
+      // Find the staff member based on the selected department and branch
+      if (branchAbbr) {
+        const branch = region.branches.find(b => b.abbr === branchAbbr);
+        if (branch) {
+          const targetDept = branch.departments.find(d => d.name === dept);
+          if (targetDept) {
+            staff = targetDept.staff.find(s => s.staffNo === staffNo);
+          }
+        }
+      } else {
+        const targetDept = region.departments.find(d => d.name === dept);
+        if (targetDept) {
+          staff = targetDept.staff.find(s => s.staffNo === staffNo);
+        }
+      }
+
+      // Populate form fields if staff is found, otherwise clear them
+      if (staff) {
+        document.getElementById('staffName').value = staff.name;
+        document.getElementById('staffDesignation').value = staff.designation;
+        document.getElementById('staffAddress').value = staff.address;
+        document.getElementById('staffEmail').value = staff.email;
+        document.getElementById('staffContact').value = staff.contact;
+        document.getElementById('staffDob').value = staff.dob;
+        document.getElementById('staffNic').value = staff.nic;
+        hideErrors(); // Hide errors if staff found
+      } else {
+        clearFormFieldsExceptStaffNoAndSelections(); // Clear if no staff found for given criteria
+      }
+    }
+
+    // Clear the entire admin form
+    function clearForm() {
+      document.getElementById('deptSelect').value = '';
+      document.getElementById('branchSelectStaff').value = '';
+      document.getElementById('branchSelectStaff').disabled = true; // Disable branch select
+      clearFormFields(); // Clear all input fields
+    }
+
+    // Clear all input fields in the admin form
+    function clearFormFields() {
+      document.getElementById('staffNo').value = '';
+      document.getElementById('staffName').value = '';
+      document.getElementById('staffDesignation').value = '';
+      document.getElementById('staffAddress').value = '';
+      document.getElementById('staffEmail').value = '';
+      document.getElementById('staffContact').value = '';
+      document.getElementById('staffDob').value = '';
+      document.getElementById('staffNic').value = '';
+      hideErrors(); // Hide any displayed errors
+    }
+
+    // Clear form fields except Staff No and the department/branch selections
+    function clearFormFieldsExceptStaffNoAndSelections() {
+        document.getElementById('staffName').value = '';
+        document.getElementById('staffDesignation').value = '';
+        document.getElementById('staffAddress').value = '';
+        document.getElementById('staffEmail').value = '';
+        document.getElementById('staffContact').value = '';
+        document.getElementById('staffDob').value = '';
+        document.getElementById('staffNic').value = '';
+        hideErrors();
+    }
+
+    // Hide all error messages
+    function hideErrors() {
+      document.getElementById('staffNoError').style.display = 'none';
+      document.getElementById('staffNameError').style.display = 'none';
+      document.getElementById('staffDesignationError').style.display = 'none';
+      document.getElementById('staffAddressError').style.display = 'none';
+      document.getElementById('staffEmailError').style.display = 'none';
+      document.getElementById('staffContactError').style.display = 'none';
+      document.getElementById('staffDobError').style.display = 'none';
+      document.getElementById('staffNicError').style.display = 'none';
+    }
+
+    // Validate admin form inputs
+    function validateForm() {
+      hideErrors(); // Hide previous errors
+      let isValid = true;
+
+      const dept = document.getElementById('deptSelect').value;
+      if (!dept) {
+        alert('Please select a Department.'); // Use alert for missing department
+        isValid = false;
+      }
+
+      const staffNo = document.getElementById('staffNo').value.trim();
+      if (staffNo === '') {
+        document.getElementById('staffNoError').textContent = 'Staff No is required.';
+        document.getElementById('staffNoError').style.display = 'block';
+        isValid = false;
+      } else if (!/^\d{1,5}$/.test(staffNo)) {
+        document.getElementById('staffNoError').textContent = 'Staff No must be 1-5 digits.';
+        document.getElementById('staffNoError').style.display = 'block';
+        isValid = false;
+      }
+
+      const staffName = document.getElementById('staffName').value.trim();
+      if (staffName === '') {
+        document.getElementById('staffNameError').textContent = 'Name is required.';
+        document.getElementById('staffNameError').style.display = 'block';
+        isValid = false;
+      } else if (!/^[a-zA-Z\s]+$/.test(staffName)) {
+        document.getElementById('staffNameError').textContent = 'Name must contain only letters.';
+        document.getElementById('staffNameError').style.display = 'block';
+        isValid = false;
+      }
+
+      const designation = document.getElementById('staffDesignation').value.trim();
+      if (designation === '') {
+        document.getElementById('staffDesignationError').textContent = 'Designation is required.';
+        document.getElementById('staffDesignationError').style.display = 'block';
+        isValid = false;
+      } else if (!/^[a-zA-Z\s]+$/.test(designation)) {
+        document.getElementById('staffDesignationError').textContent = 'Designation must contain only letters.';
+        document.getElementById('staffDesignationError').style.display = 'block';
+        isValid = false;
+      }
+
+      const address = document.getElementById('staffAddress').value.trim();
+      if (address === '') {
+        document.getElementById('staffAddressError').textContent = 'Address is required.';
+        document.getElementById('staffAddressError').style.display = 'block';
+        isValid = false;
+      } else if (!/^[a-zA-Z0-9\s,.-]+$/.test(address)) {
+        document.getElementById('staffAddressError').textContent = 'Address must contain only text, numbers, and basic punctuation.';
+        document.getElementById('staffAddressError').style.display = 'block';
+        isValid = false;
+      }
+
+      const email = document.getElementById('staffEmail').value.trim();
+      if (email === '') {
+        document.getElementById('staffEmailError').textContent = 'Email is required.';
+        document.getElementById('staffEmailError').style.display = 'block';
+        isValid = false;
+      } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        document.getElementById('staffEmailError').textContent = 'Invalid email format.';
+        document.getElementById('staffEmailError').style.display = 'block';
+        isValid = false;
+      }
+
+      const contact = document.getElementById('staffContact').value.trim();
+      if (contact === '') {
+        document.getElementById('staffContactError').textContent = 'Contact is required.';
+        document.getElementById('staffContactError').style.display = 'block';
+        isValid = false;
+      } else if (!/^\d{10}$/.test(contact)) {
+        document.getElementById('staffContactError').textContent = 'Contact must be exactly 10 digits.';
+        document.getElementById('staffContactError').style.display = 'block';
+        isValid = false;
+      }
+
+      const dob = document.getElementById('staffDob').value.trim();
+      if (dob === '') {
+        document.getElementById('staffDobError').textContent = 'Date of Birth is required.';
+        document.getElementById('staffDobError').style.display = 'block';
+        isValid = false;
+      } else if (!/^\d{2}-\d{2}-\d{4}$/.test(dob)) {
+        document.getElementById('staffDobError').textContent = 'Date must be in dd-mm-yyyy format.';
+        document.getElementById('staffDobError').style.display = 'block';
+        isValid = false;
+      }
+
+      const nic = document.getElementById('staffNic').value.trim();
+      if (nic === '') {
+        document.getElementById('staffNicError').textContent = 'NIC is required.';
+        document.getElementById('staffNicError').style.display = 'block';
+        isValid = false;
+      } else if (nic.length > 10 || !/^[a-zA-Z0-9]+$/.test(nic)) {
+        document.getElementById('staffNicError').textContent = 'NIC must be max 10 chars (letters/numbers only).';
+        document.getElementById('staffNicError').style.display = 'block';
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    // Add new staff member
+    function addStaff() {
+      if (!validateForm()) return; // Validate form before adding
+
+      const dept = document.getElementById('deptSelect').value;
+      const branchAbbr = document.getElementById('branchSelectStaff').value;
+      const staffNo = document.getElementById('staffNo').value.trim();
+      const staffName = document.getElementById('staffName').value.trim();
+      const designation = document.getElementById('staffDesignation').value.trim();
+      const address = document.getElementById('staffAddress').value.trim();
+      const email = document.getElementById('staffEmail').value.trim();
+      const contact = document.getElementById('staffContact').value.trim();
+      const dob = document.getElementById('staffDob').value.trim();
+      const nic = document.getElementById('staffNic').value.trim();
+
+      let targetDepartment = null;
+      const region = orgData.regions[0];
+
+      // Find the target department based on selected branch and department
+      if (branchAbbr) {
+        const branch = region.branches.find(b => b.abbr === branchAbbr);
+        if (branch) {
+          targetDepartment = branch.departments.find(d => d.name === dept);
+        }
+      } else {
+        targetDepartment = region.departments.find(d => d.name === dept);
+      }
+
+      if (targetDepartment) {
+        // Check if staff number already exists in the target department
+        const existingStaff = targetDepartment.staff.find(s => s.staffNo === staffNo);
+        if (!existingStaff) {
+          // Add new staff member
+          targetDepartment.staff.push({ staffNo, name: staffName, designation, address, email, contact, dob, nic });
+          saveData(); // Save changes to local storage
+          renderTree(); // Re-render the tree
+          clearForm(); // Clear the form
+          alert('Staff added successfully!');
+        } else {
+          alert('Error: Staff number already exists in this department/branch.');
+        }
+      } else {
+        alert('Error: Department or Branch not found.');
+      }
+    }
+
+    // Update existing staff member details
+    function updateStaff() {
+      if (!validateForm()) return; // Validate form before updating
+
+      const dept = document.getElementById('deptSelect').value;
+      const branchAbbr = document.getElementById('branchSelectStaff').value;
+      const staffNo = document.getElementById('staffNo').value.trim();
+      const staffName = document.getElementById('staffName').value.trim();
+      const designation = document.getElementById('staffDesignation').value.trim();
+      const address = document.getElementById('staffAddress').value.trim();
+      const email = document.getElementById('staffEmail').value.trim();
+      const contact = document.getElementById('staffContact').value.trim();
+      const dob = document.getElementById('staffDob').value.trim();
+      const nic = document.getElementById('staffNic').value.trim();
+
+      let targetDepartment = null;
+      const region = orgData.regions[0];
+
+      // Find the target department
+      if (branchAbbr) {
+        const branch = region.branches.find(b => b.abbr === branchAbbr);
+        if (branch) {
+          targetDepartment = branch.departments.find(d => d.name === dept);
+        }
+      } else {
+        targetDepartment = region.departments.find(d => d.name === dept);
+      }
+
+      if (targetDepartment) {
+        // Find the index of the staff member to update
+        const staffIndex = targetDepartment.staff.findIndex(s => s.staffNo === staffNo);
+        if (staffIndex !== -1) {
+          // Update staff details
+          targetDepartment.staff[staffIndex] = { staffNo, name: staffName, designation, address, email, contact, dob, nic };
+          saveData(); // Save changes
+          renderTree(); // Re-render the tree
+          clearForm(); // Clear the form
+          alert('Staff updated successfully!');
+        } else {
+          alert('Error: Staff not found in this department/branch.');
+        }
+      } else {
+        alert('Error: Department or Branch not found.');
+      }
+    }
+
+    // Delete a staff member
+    function deleteStaff() {
+      const dept = document.getElementById('deptSelect').value;
+      const branchAbbr = document.getElementById('branchSelectStaff').value;
+      const staffNo = document.getElementById('staffNo').value.trim();
+
+      if (!dept || !staffNo) {
+        alert('Please select Department and enter Staff No to delete.');
+        return;
+      }
+
+      let targetDepartment = null;
+      const region = orgData.regions[0];
+
+      // Find the target department
+      if (branchAbbr) {
+        const branch = region.branches.find(b => b.abbr === branchAbbr);
+        if (branch) {
+          targetDepartment = branch.departments.find(d => d.name === dept);
+        }
+      } else {
+        targetDepartment = region.departments.find(d => d.name === dept);
+      }
+
+      if (targetDepartment) {
+        const initialLength = targetDepartment.staff.length;
+        // Filter out the staff member to delete
+        targetDepartment.staff = targetDepartment.staff.filter(s => s.staffNo !== staffNo);
+        if (targetDepartment.staff.length < initialLength) {
+          saveData(); // Save changes
+          renderTree(); // Re-render the tree
+          clearForm(); // Clear the form
+          alert('Staff deleted successfully!');
+        } else {
+          alert('Staff not found in this department/branch.');
+        }
+      } else {
+        alert('Error: Department or Branch not found.');
+      }
+    }
+
+    // Upload staff data from a CSV file
+    function uploadCSV() {
+      const fileInput = document.getElementById('csvFile');
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const text = e.target.result;
+          // Split into rows, then split each row by comma and trim whitespace
+          const rows = text.split('\n').map(row => row.split(',').map(cell => cell.trim()));
+
+          if (rows.length < 2) { // Expecting at least a header row and one data row
+            alert("CSV file is empty or malformed. Expected header and data.");
+            fileInput.value = ''; // Clear the file input
+            return;
+          }
+
+          // Assuming CSV format:
+          // Row 0: Department,BranchAbbr (e.g., "Operation,TCO" or "Regional Manager,")
+          // Row 1: Header for staff data (e.g., "Name,Address,Email,Contact,DOB,StaffNo,NIC,Designation") - This row is skipped in processing
+          // Row 2 onwards: Staff data - Order should match the header
+
+          const headerInfo = rows[0];
+          const deptNameFromCSV = headerInfo[0];
+          const branchAbbrFromCSV = headerInfo[1] || ''; // Branch Abbr can be empty for regional depts
+
+          let targetDepartment = null;
+          const region = orgData.regions[0]; // Assuming 'East' is the only region
+
+          // Find or create the target department based on CSV header
+          if (branchAbbrFromCSV) {
+            let branch = region.branches.find(b => b.abbr === branchAbbrFromCSV);
+            if (!branch) {
+              // If branch from CSV doesn't exist, create a new one.
+              // Note: This creates a branch with the abbr as name and default departments.
+              // You might want a more robust way to handle new branches (e.g., another CSV for branches).
+              branch = { abbr: branchAbbrFromCSV, name: branchAbbrFromCSV, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] };
+              region.branches.push(branch);
+              console.warn(`Branch ${branchAbbrFromCSV} not found, adding it with default departments.`);
+            }
+            targetDepartment = branch.departments.find(d => d.name === deptNameFromCSV);
+            if (!targetDepartment) {
+               // If department doesn't exist in the branch, add it
+              targetDepartment = { name: deptNameFromCSV, staff: [] };
+              branch.departments.push(targetDepartment);
+              console.warn(`Department "${deptNameFromCSV}" not found in branch "${branchAbbrFromCSV}", adding it.`);
+            }
+          } else {
+            targetDepartment = region.departments.find(d => d.name === deptNameFromCSV);
+            if (!targetDepartment) {
+              // If department doesn't exist in the region, add it
+              targetDepartment = { name: deptNameFromCSV, staff: [] };
+              region.departments.push(targetDepartment);
+              console.warn(`Regional Department "${deptNameFromCSV}" not found, adding it.`);
+            }
+          }
+
+          if (!targetDepartment) {
+            alert(`Error: Could not determine target department from CSV header: "${deptNameFromCSV}" in "${branchAbbrFromCSV}".`);
+            fileInput.value = '';
+            return;
+          }
+
+          const staffDataStartIndex = 2; // Data starts from the third row (index 2)
+          let newStaffCount = 0;
+          let skippedStaffCount = 0;
+
+          // Process staff data from the CSV
+          for (let i = staffDataStartIndex; i < rows.length; i++) {
+            const staffData = rows[i];
+            // Ensure enough columns for all staff properties based on expected order
+            if (staffData.length >= 8) {
+              // Map CSV columns to staff object properties based on the expected order in the header row (though we are skipping header row 1)
+              // Assuming the data order in CSV is: Name,Address,Email,Contact,DOB,StaffNo,NIC,Designation
+              const name = staffData[0];
+              const address = staffData[1];
+              const email = staffData[2];
+              const contact = staffData[3];
+              const dob = staffData[4];
+              const staffNo = staffData[5];
+              const nic = staffData[6];
+              const designation = staffData[7];
+
+
+              // Basic validation for critical fields from CSV
+              if (staffNo && name && designation) {
+                const existingStaff = targetDepartment.staff.find(s => s.staffNo === staffNo);
+                if (!existingStaff) {
+                  // Add new staff member if staff number doesn't exist
+                  targetDepartment.staff.push({ staffNo, name, designation, address, email, contact, dob, nic });
+                  newStaffCount++;
+                } else {
+                  console.warn(`Skipping staff with Staff No ${staffNo} (Name: ${name}) from CSV as it already exists.`);
+                  skippedStaffCount++;
+                }
+              } else {
+                console.warn(`Skipping row ${i + 1} from CSV due to missing critical staff data (StaffNo, Name, or Designation): ${staffData.join(',')}`);
+                skippedStaffCount++;
+              }
+            } else {
+              console.warn(`Skipping incomplete row ${i + 1} in CSV: Expected 8 columns, found ${staffData.length}. Data: ${staffData.join(',')}`);
+              skippedStaffCount++;
+            }
+          }
+
+          saveData(); // Save changes
+          renderTree(); // Re-render the tree
+          populateBranchSelect(); // Re-populate branch select after potential new branch creation
+          fileInput.value = ''; // Clear the file input
+          alert(`CSV upload complete. Added ${newStaffCount} staff members. Skipped ${skippedStaffCount} (existing or malformed rows).`);
+        };
+        reader.readAsText(file); // Read the file as text
+      } else {
+        alert('Please select a CSV file to upload.');
+      }
+    }
+
+    // Function to trigger search and re-render the tree with filtered results
+    function showSearchResults() {
+      const search = document.getElementById('searchInput').value.trim().toLowerCase();
+      renderTree(search); // Re-render the entire tree with the search filter
+    }
+
+    // Function called on input change in the search bar
+    function updateSearchResults() {
+      showSearchResults(); // Simply call showSearchResults to apply filter immediately
+    }
+
+
+    // Show all branches, departments, and staff lists
+    function showAll() {
+      document.getElementById('eastBox').style.display = 'block';
+      document.getElementById('regMgrDepts').style.display = 'flex';
+      document.getElementById('branches-East').style.display = 'flex';
+
+      // Show all department containers within branches
+      document.querySelectorAll('.branch-box').forEach(div => {
+        const deptsContainer = div.querySelector('.depts-container');
+        if (deptsContainer) {
+          deptsContainer.style.display = 'flex';
+          // Show all staff lists within these departments
+          deptsContainer.querySelectorAll('.dept-box').forEach(deptDiv => {
+            const ul = deptDiv.querySelector('ul');
+            if (ul) ul.classList.add('active');
+          });
+        }
+      });
+
+      // Show all staff lists for regional departments
+      document.querySelectorAll('#regMgrDepts .dept-box').forEach(deptDiv => {
+        const ul = deptDiv.querySelector('ul');
+        if (ul) ul.classList.add('active');
+      });
+
+      renderTree(); // Re-render to ensure all elements are present and correctly structured
+    }
+
+    // Reset the view to the initial state (East box visible, children hidden)
+    function resetView() {
+      document.getElementById('eastBox').style.display = 'block'; // Keep East box visible
+      document.getElementById('regMgrDepts').style.display = 'none'; // Hide regional depts
+      document.getElementById('branches-East').style.display = 'none'; // Hide branches
+      document.querySelectorAll('.depts-container').forEach(div => div.style.display = 'none'); // Hide all dept containers
+      document.querySelectorAll('ul').forEach(ul => ul.classList.remove('active')); // Hide all staff lists
+      document.getElementById('searchInput').value = ''; // Clear search input
+      renderTree(); // Re-render to ensure initial state is correct
+    }
+
+    // Helper function to find an element by text content (used for toggling staff lists)
+    // Note: This is a basic implementation and might need refinement for complex text content.
+    Element.prototype.contains = function(text) {
+        return this.textContent.includes(text);
+    };
+
+
+    // Initial render when the page loads
+    renderTree();
+  </script>
+</body>
+</html>
