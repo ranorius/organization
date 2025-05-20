@@ -157,28 +157,6 @@
       background: #f8f8f8; /* Lighter hover background */
     }
 
-    /* Arrows connecting tree nodes */
-    .arrow {
-      position: absolute;
-      width: 2px;
-      background: #333;
-      height: 20px;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .arrow::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 5px solid #333;
-    }
-
     /* Popup for Staff Details */
     .popup {
       display: none;
@@ -267,7 +245,7 @@
     }
 
     .admin-panel .form-group {
-        display: flex;
+        display: flex; /* Use flex for form groups */
         flex-direction: column;
         align-items: flex-start;
         width: calc(50% - 10px); /* Two items per row with gap */
@@ -431,18 +409,21 @@
            width: 100%;
        }
     }
+
+    /* Remove Arrow Styles as they are not used for visual connections in this tree logic */
+    .arrow, .arrow::after { display: none !important; }
   </style>
 </head>
 <body>
   <div class="overlay" id="overlay"></div>
+
   <div class="container">
     <h1>Organizational Structure</h1>
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search by name, staff no, phone, or NIC" oninput="updateSearchResults()">
       <button onclick="showSearchResults()">Search</button>
     </div>
-    <div class="tree" id="orgTree">
-      </div>
+    <div class="tree" id="orgTree"></div>
     <div class="controls">
       <button onclick="showAll()">Show All</button>
       <button onclick="resetView()">Reset</button>
@@ -536,38 +517,67 @@
       regions: [
         {
           name: "East",
+          // Regional departments directly under 'East'
           departments: [
-            { name: "Regional Manager", staff: [] },
-            { name: "Area Office", staff: [] },
-            { name: "SME HUB", staff: [] }
+            {
+              name: "Regional Manager", staff: [
+                // Example staff for Regional Manager
+                { staffNo: "RM001", name: "Ramesh Kumar", designation: "Regional Manager", address: "101 Lake Rd", email: "ramesh@example.com", contact: "9477123456", dob: "01-01-1975", nic: "751234567V" }
+              ]
+            },
+            {
+              name: "Area Office",
+              type: "container", // Mark as a container for sub-departments and direct staff
+              staff: [ // Direct staff under Area Office
+                { staffNo: "AO001", name: "Kamala Devi", designation: "Area Operation Manager", address: "202 Temple St", email: "kamala@example.com", contact: "9471234567", dob: "10-05-1980", nic: "801234567V" },
+                { staffNo: "AO002", name: "Suresh Perera", designation: "Area Manager's Secretary", address: "303 Beach Rd", email: "suresh@example.com", contact: "9476789012", dob: "15-08-1982", nic: "829876543V" },
+                { staffNo: "AO003", name: "Priya Sharma", designation: "Marketing Officer", address: "404 Hilltop Ave", email: "priya@example.com", contact: "9472345678", dob: "20-03-1988", nic: "881234567V" },
+                { staffNo: "AO004", name: "Nimal Fernando", designation: "Recovery Officer", address: "505 River View", email: "nimal@example.com", contact: "9478901234", dob: "25-11-1979", nic: "799876543V" },
+                { staffNo: "AO005", name: "Arun Dias", designation: "Driver", address: "606 Palm Grove", email: "arun@example.com", contact: "9475678901", dob: "05-02-1990", nic: "901234567V" }
+              ],
+              subDepartments: [ // Nested departments under Area Office
+                { name: "Operation", staff: [] },
+                { name: "Credit", staff: [] }
+              ]
+            },
+            {
+              name: "SME HUB", staff: [
+                { staffNo: "SME01", name: "Tharindu Silva", designation: "Area Credit Manager", address: "707 Ocean Dr", email: "tharindu@example.com", contact: "9477234567", dob: "02-02-1978", nic: "781234567V" },
+                { staffNo: "SME02", name: "Gayathri Bandara", designation: "Senior Credit Analyst", address: "808 Green Ln", email: "gayathri@example.com", contact: "9471345678", dob: "12-04-1985", nic: "859876543V" },
+                { staffNo: "SME03", name: "Dilshan Samarasinghe", designation: "Legal Officer", address: "909 City Rd", email: "dilshan@example.com", contact: "9476890123", dob: "22-06-1983", nic: "831234567V" },
+                { staffNo: "SME04", name: "Shalini Fonseka", designation: "Credit Analyst", address: "1010 Park Ave", email: "shalini@example.com", contact: "9472456789", dob: "03-09-1991", nic: "919876543V" },
+                { staffNo: "SME05", name: "Kasun Jayawardena", designation: "Documentation Officer", address: "1111 Lake View", email: "kasun@example.com", contact: "9478012345", dob: "13-11-1987", nic: "871234567V" }
+              ]
+            }
           ],
+          // Branches
           branches: [
             {
               abbr: "TCO", name: "Trincomalee",
+              branchManager: { staffNo: "BM001", name: "Arjun Kumar", designation: "Branch Manager", address: "123 Main St", email: "arjun@example.com", contact: "9477111222", dob: "05-03-1970", nic: "701234567V" },
               departments: [
                 { name: "Operation", staff: [
-                  { staffNo: "S001", name: "John Doe", designation: "Deputy Branch Manager", address: "123 Main St", email: "john@example.com", contact: "5551234567", dob: "01-01-1980", nic: "A1234567" },
+                  { staffNo: "DBM01", name: "John Doe", designation: "Deputy Branch Manager", address: "123 Main St", email: "john@example.com", contact: "5551234567", dob: "01-01-1980", nic: "A1234567" },
                   { staffNo: "S002", name: "Jane Smith", designation: "Current Account Officer", address: "456 Oak Ave", email: "jane@example.com", contact: "5557654321", dob: "15-02-1985", nic: "B9876543" },
                   { staffNo: "S003", name: "Alice Brown", designation: "Savings Officer", address: "789 Pine Rd", email: "alice@example.com", contact: "5559876543", dob: "20-03-1990", nic: "C7654321" },
                   { staffNo: "S004", name: "Bob Green", designation: "Counter Staff", address: "101 Elm St", email: "bob@example.com", contact: "5554567890", dob: "25-04-1995", nic: "D1234567" },
                   { staffNo: "S005", name: "Carol White", designation: "Teller", address: "202 Maple Ave", email: "carol@example.com", contact: "5553216549", dob: "30-05-1992", nic: "E9876543" }
                 ]},
                 { name: "Credit", staff: [
-                  { staffNo: "S006", name: "Mike Johnson", designation: "Branch Manager", address: "303 Oak St", email: "mike@example.com", contact: "5556543210", dob: "10-06-1982", nic: "F4567890" },
-                  { staffNo: "S007", name: "Sarah Davis", designation: "Credit Officer", address: "404 Pine Rd", email: "sarah@example.com", contact: "5557890123", dob: "15-07-1987", nic: "G1234567" },
-                  { staffNo: "S008", name: "Tom Lee", designation: "Credit Assistant", address: "505 Elm St", email: "tom@example.com", contact: "5552345678", dob: "20-08-1993", nic: "H9876543" }
+                  { staffNo: "S006", name: "Mike Johnson", designation: "Credit Officer", address: "303 Oak St", email: "mike@example.com", contact: "5556543210", dob: "10-06-1982", nic: "F4567890" },
+                  { staffNo: "S007", name: "Sarah Davis", designation: "Credit Assistant", address: "404 Pine Rd", email: "sarah@example.com", contact: "5557890123", dob: "15-07-1987", nic: "G1234567" }
                 ]}
               ]
             },
-            { abbr: "BCL", name: "Batticaloa", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "CNK", name: "Chenkalady", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "KKY", name: "Kattankudy", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "KWK", name: "Kalawanchikudy", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "KMN", name: "Kalmunai", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "SMT", name: "Sammanthurai", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "AKP", name: "Akkaraipattu", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "PVL", name: "Pottuvil", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
-            { abbr: "AMP", name: "Ampara", departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] }
+            { abbr: "BCL", name: "Batticaloa", branchManager: { staffNo: "BM002", name: "Priya Ramani", designation: "Branch Manager", address: "456 Main St", email: "priya@example.com", contact: "9477333444", dob: "12-07-1972", nic: "729876543V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "CNK", name: "Chenkalady", branchManager: { staffNo: "BM003", name: "Mohan Raj", designation: "Branch Manager", address: "789 Main St", email: "mohan@example.com", contact: "9477555666", dob: "20-09-1976", nic: "761234567V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "KKY", name: "Kattankudy", branchManager: { staffNo: "BM004", name: "Fathima Rizana", designation: "Branch Manager", address: "101 Main St", email: "fathima@example.com", contact: "9477777888", dob: "03-04-1980", nic: "809876543V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "KWK", name: "Kalawanchikudy", branchManager: { staffNo: "BM005", name: "Senthil Nathan", designation: "Branch Manager", address: "202 Main St", email: "senthil@example.com", contact: "9477999000", dob: "15-01-1974", nic: "741234567V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "KMN", name: "Kalmunai", branchManager: { staffNo: "BM006", name: "Aisha Khan", designation: "Branch Manager", address: "303 Main St", email: "aisha@example.com", contact: "9477123000", dob: "28-06-1981", nic: "819876543V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "SMT", name: "Sammanthurai", branchManager: { staffNo: "BM007", name: "Jeyaraj Perumal", designation: "Branch Manager", address: "404 Main St", email: "jeyaraj@example.com", contact: "9477456789", dob: "09-02-1977", nic: "771234567V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "AKP", name: "Akkaraipattu", branchManager: { staffNo: "BM008", name: "Zahira Begum", designation: "Branch Manager", address: "505 Main St", email: "zahira@example.com", contact: "9477789012", dob: "18-10-1983", nic: "839876543V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "PVL", name: "Pottuvil", branchManager: { staffNo: "BM009", name: "Kumara Bandara", designation: "Branch Manager", address: "606 Main St", email: "kumara@example.com", contact: "9477012345", dob: "25-05-1979", nic: "791234567V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] },
+            { abbr: "AMP", name: "Ampara", branchManager: { staffNo: "BM010", name: "Dilani Weerasinghe", designation: "Branch Manager", address: "707 Main St", email: "dilani@example.com", contact: "9477345678", dob: "07-03-1984", nic: "849876543V" }, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] }
           ]
         }
       ]
@@ -576,6 +586,20 @@
     // Save current organizational data to local storage
     function saveData() {
       localStorage.setItem('orgData', JSON.stringify(orgData));
+    }
+
+    // Helper: Collapse all branch department containers
+    function collapseAllBranchesDepts() {
+      document.querySelectorAll('.branches-container .depts-container').forEach(deptsContainer => {
+        deptsContainer.style.display = 'none';
+      });
+    }
+
+    // Helper: Collapse all staff lists
+    function collapseAllStaffLists() {
+      document.querySelectorAll('ul').forEach(ul => {
+        ul.classList.remove('active');
+      });
     }
 
     // Render the organizational tree structure
@@ -587,79 +611,125 @@
       const eastBox = document.createElement('div');
       eastBox.id = 'eastBox';
       eastBox.className = 'region-box';
-      eastBox.innerHTML = "East";
-      eastBox.onclick = () => toggleEast();
+      eastBox.innerHTML = 'East';
+      eastBox.onclick = () => {
+        // Toggle visibility of regional departments and branches containers
+        const regMgrDepts = document.getElementById('regMgrDepts');
+        const branches = document.getElementById('branches-East');
+        const isHidden = regMgrDepts.style.display === 'none';
+
+        regMgrDepts.style.display = isHidden ? 'flex' : 'none';
+        branches.style.display = isHidden ? 'flex' : 'none';
+
+        // Collapse all sub-elements when East is toggled
+        collapseAllBranchesDepts();
+        collapseAllStaffLists();
+      };
       eastBox.style.display = 'block'; // Always display the "East" box
 
-      // Create container for regional departments (Regional Manager, Area Office, SME HUB)
+      // Regional departments container (Regional Manager, Area Office, SME HUB)
       const regMgrDeptsContainer = document.createElement('div');
       regMgrDeptsContainer.className = 'depts-container';
       regMgrDeptsContainer.id = 'regMgrDepts';
-      regMgrDeptsContainer.style.display = 'flex'; // Initially display regional departments
+      regMgrDeptsContainer.style.display = 'none'; // Initially hidden, shown by East click
 
-      // Add Regional Manager department box
-      const regionalMgrDept = document.createElement('div');
-      regionalMgrDept.className = 'dept-box';
-      regionalMgrDept.innerHTML = "Regional Manager";
-      regionalMgrDept.onclick = (e) => {
-        e.stopPropagation(); // Prevent triggering parent toggleEast
-        toggleStaff("East", "Regional Manager", null); // Toggle staff for Regional Manager
-      };
-      const regMgrArrow = document.createElement('div');
-      regMgrArrow.className = 'arrow';
-      regionalMgrDept.appendChild(regMgrArrow);
-
-      // Add staff list for Regional Manager
-      const regionalMgrStaffUl = document.createElement('ul');
-      const regionalMgrDeptData = orgData.regions[0].departments.find(d => d.name === "Regional Manager");
-      if (regionalMgrDeptData) {
-          regionalMgrDeptData.staff.forEach(staff => {
-            // Apply filter to staff list
-            if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
-              const staffLi = document.createElement('li');
-              staffLi.innerHTML = `${staff.name} (${staff.designation})`;
-              staffLi.onclick = () => showStaffDetails("East", null, staff.staffNo);
-              regionalMgrStaffUl.appendChild(staffLi);
-            }
-          });
-      }
-      regionalMgrDept.appendChild(regionalMgrStaffUl);
-      regMgrDeptsContainer.appendChild(regionalMgrDept);
-
-
-      // Add other regional departments (Area Office, SME HUB)
+      // Iterate through regional departments (Regional Manager, Area Office, SME HUB)
       orgData.regions[0].departments.forEach(dept => {
-        if (dept.name !== "Regional Manager") { // Exclude Regional Manager as it's added separately
-          const deptDiv = document.createElement('div');
-          deptDiv.className = 'dept-box';
-          deptDiv.innerHTML = dept.name;
+        const deptDiv = document.createElement('div');
+        deptDiv.className = 'dept-box';
+        deptDiv.innerHTML = dept.name;
+
+        const staffUl = document.createElement('ul');
+
+        if (dept.type === "container" && dept.subDepartments) {
+          // Handle Area Office and its sub-departments and direct staff
           deptDiv.onclick = (e) => {
             e.stopPropagation();
-            toggleStaff("East", dept.name, null); // Toggle staff for other regional departments
+            collapseAllStaffLists(); // Collapse other staff lists
+            const ul = deptDiv.querySelector('ul');
+            if (ul) ul.classList.toggle('active'); // Toggle visibility of Area Office content (direct staff + sub-departments)
           };
-          const arrow = document.createElement('div');
-          arrow.className = 'arrow';
-          deptDiv.appendChild(arrow);
-          const staffUl = document.createElement('ul');
+
+          // Add direct staff of Area Office first
+          if (dept.staff && dept.staff.length > 0) {
+              const directStaffHeader = document.createElement('li');
+              directStaffHeader.innerHTML = `<strong>${dept.name} Staff:</strong>`;
+              staffUl.appendChild(directStaffHeader);
+              dept.staff.forEach(staff => {
+                  if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
+                      const staffLi = document.createElement('li');
+                      staffLi.innerHTML = `${staff.name} (${staff.designation})`;
+                      staffLi.onclick = (e) => {
+                          e.stopPropagation(); // Prevent toggling the parent UL
+                          showStaffDetails('East', null, staff.staffNo);
+                      };
+                      staffUl.appendChild(staffLi);
+                  }
+              });
+          }
+
+          // Add sub-departments of Area Office as clickable list items
+          if (dept.subDepartments && dept.subDepartments.length > 0) {
+              const subDeptHeader = document.createElement('li');
+              subDeptHeader.innerHTML = `<strong>Sub-Departments:</strong>`;
+              staffUl.appendChild(subDeptHeader);
+
+              dept.subDepartments.forEach(subDept => {
+                const subDeptLi = document.createElement('li');
+                subDeptLi.innerHTML = subDept.name;
+                subDeptLi.onclick = (e) => {
+                  e.stopPropagation();
+                  // When a sub-department is clicked, show its staff in a new nested UL
+                  let subDeptStaffHtml = '';
+                  subDept.staff.forEach(staff => {
+                    if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
+                      subDeptStaffHtml += `<li onclick="showStaffDetails('East', null, '${staff.staffNo}')">${staff.name} (${staff.designation})</li>`;
+                    }
+                  });
+                  // Clear previous sub-department staff and add current one
+                  staffUl.querySelectorAll('.sub-dept-staff').forEach(el => el.remove()); // Remove previous sub-dept staff
+                  const subDeptStaffUl = document.createElement('ul');
+                  subDeptStaffUl.classList.add('sub-dept-staff'); // Mark this UL
+                  subDeptStaffUl.innerHTML = `<strong>${subDept.name} Staff:</strong>${subDeptStaffHtml ? subDeptStaffHtml : '<li>No staff found.</li>'}`;
+                  staffUl.appendChild(subDeptStaffUl);
+                  subDeptStaffUl.classList.add('active'); // Ensure this nested staff list is active
+                };
+                staffUl.appendChild(subDeptLi);
+              });
+          }
+
+        } else {
+          // Handle regular departments (Regional Manager, SME HUB)
+          deptDiv.onclick = (e) => {
+            e.stopPropagation();
+            collapseAllStaffLists(); // Collapse other staff lists
+            const ul = deptDiv.querySelector('ul');
+            if (ul) ul.classList.toggle('active'); // Toggle visibility of staff list
+          };
+
           dept.staff.forEach(staff => {
-            // Apply filter to staff list
             if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
               const staffLi = document.createElement('li');
               staffLi.innerHTML = `${staff.name} (${staff.designation})`;
-              staffLi.onclick = () => showStaffDetails("East", null, staff.staffNo);
+              staffLi.onclick = (e) => {
+                  e.stopPropagation(); // Prevent toggling the parent UL
+                  showStaffDetails("East", null, staff.staffNo);
+              };
               staffUl.appendChild(staffLi);
             }
           });
-          deptDiv.appendChild(staffUl);
-          regMgrDeptsContainer.appendChild(deptDiv);
         }
+
+        deptDiv.appendChild(staffUl);
+        regMgrDeptsContainer.appendChild(deptDiv);
       });
 
-      // Create container for branches
+
+      // Branches container
       const branchesContainer = document.createElement('div');
       branchesContainer.className = 'branches-container';
       branchesContainer.id = 'branches-East';
-      branchesContainer.style.display = 'flex'; // Initially display branches
+      branchesContainer.style.display = 'none'; // Initially hidden, shown by East click
 
       // Add each branch and its departments
       orgData.regions[0].branches.forEach(branch => {
@@ -668,16 +738,43 @@
         branchDiv.innerHTML = `${branch.abbr} (${branch.name})`;
         branchDiv.onclick = (e) => {
           e.stopPropagation();
-          toggleBranch(branch.abbr); // Toggle departments within this branch
+          // Accordion: Only show this branch's departments and collapse others
+          collapseAllBranchesDepts(); // Collapse other branch containers
+          collapseAllStaffLists(); // Collapse all staff lists
+          const deptsContainer = branchDiv.querySelector('.depts-container');
+          if (deptsContainer) {
+            deptsContainer.style.display = 'flex'; // Show this branch's departments
+          }
         };
-        const arrow = document.createElement('div');
-        arrow.className = 'arrow';
-        branchDiv.appendChild(arrow);
 
         const deptsContainer = document.createElement('div');
         deptsContainer.className = 'depts-container';
         deptsContainer.id = `depts-${branch.abbr}`;
-        deptsContainer.style.display = 'flex'; // Initially display departments within branches
+        deptsContainer.style.display = 'none'; // Hidden by default, shown on branch click
+
+        // Add Branch Manager as a special "department" or staff list item
+        if (branch.branchManager) {
+            const bmDeptDiv = document.createElement('div');
+            bmDeptDiv.className = 'dept-box';
+            bmDeptDiv.innerHTML = 'Branch Manager';
+            bmDeptDiv.onclick = (e) => {
+                e.stopPropagation();
+                collapseAllStaffLists();
+                const ul = bmDeptDiv.querySelector('ul');
+                if (ul) ul.classList.toggle('active');
+            };
+            const bmStaffUl = document.createElement('ul');
+            const bmLi = document.createElement('li');
+            bmLi.innerHTML = `${branch.branchManager.name} (${branch.branchManager.designation})`;
+            bmLi.onclick = (e) => {
+                e.stopPropagation();
+                showStaffDetails("East", branch.abbr, branch.branchManager.staffNo);
+            };
+            bmStaffUl.appendChild(bmLi);
+            bmDeptDiv.appendChild(bmStaffUl);
+            deptsContainer.appendChild(bmDeptDiv);
+        }
+
 
         branch.departments.forEach(dept => {
           const deptDiv = document.createElement('div');
@@ -685,18 +782,19 @@
           deptDiv.innerHTML = dept.name;
           deptDiv.onclick = (e) => {
             e.stopPropagation();
-            toggleStaff("East", dept.name, branch.abbr); // Toggle staff for this department in this branch
+            collapseAllStaffLists(); // Collapse other staff lists
+            const ul = deptDiv.querySelector('ul');
+            if (ul) ul.classList.toggle('active'); // Toggle staff list visibility
           };
-          const arrowDept = document.createElement('div');
-          arrowDept.className = 'arrow';
-          deptDiv.appendChild(arrowDept);
           const staffUl = document.createElement('ul');
           dept.staff.forEach(staff => {
-            // Apply filter to staff list
             if (filter === '' || staff.name.toLowerCase().includes(filter) || staff.staffNo.includes(filter) || staff.contact.includes(filter) || staff.nic.includes(filter)) {
               const staffLi = document.createElement('li');
               staffLi.innerHTML = `${staff.name} (${staff.designation})`;
-              staffLi.onclick = () => showStaffDetails("East", branch.abbr, staff.staffNo);
+              staffLi.onclick = (e) => {
+                  e.stopPropagation(); // Prevent toggling the parent UL
+                  showStaffDetails("East", branch.abbr, staff.staffNo);
+              };
               staffUl.appendChild(staffLi);
             }
           });
@@ -712,83 +810,117 @@
       tree.appendChild(regMgrDeptsContainer);
       tree.appendChild(branchesContainer);
 
-      // If a filter is applied, ensure relevant containers are visible
+      // If a filter is applied, ensure relevant containers and staff lists are visible
       if (filter !== '') {
           document.getElementById('eastBox').style.display = 'block';
           document.getElementById('regMgrDepts').style.display = 'flex';
           document.getElementById('branches-East').style.display = 'flex';
-          document.querySelectorAll('.depts-container').forEach(dc => dc.style.display = 'flex');
-          document.querySelectorAll('ul').forEach(ul => ul.classList.add('active'));
+
+          // Iterate through all departments and branches to find matching staff
+          let foundStaffPaths = [];
+
+          // Search in regional departments
+          orgData.regions[0].departments.forEach(dept => {
+              if (dept.type === "container" && dept.subDepartments) {
+                  // Check Area Office direct staff
+                  dept.staff.forEach(staff => {
+                      if (staff.name.toLowerCase().includes(filter) || staff.staffNo.toLowerCase().includes(filter) || staff.contact.includes(filter) || staff.nic.toLowerCase().includes(filter)) {
+                          foundStaffPaths.push({ type: 'regional', deptName: dept.name, staffNo: staff.staffNo });
+                      }
+                  });
+                  // Check Area Office sub-departments
+                  dept.subDepartments.forEach(subDept => {
+                      subDept.staff.forEach(staff => {
+                          if (staff.name.toLowerCase().includes(filter) || staff.staffNo.toLowerCase().includes(filter) || staff.contact.includes(filter) || staff.nic.toLowerCase().includes(filter)) {
+                              foundStaffPaths.push({ type: 'regional-sub', deptName: dept.name, subDeptName: subDept.name, staffNo: staff.staffNo });
+                          }
+                      });
+                  });
+              } else {
+                  // Check other regional departments (Regional Manager, SME HUB)
+                  dept.staff.forEach(staff => {
+                      if (staff.name.toLowerCase().includes(filter) || staff.staffNo.toLowerCase().includes(filter) || staff.contact.includes(filter) || staff.nic.toLowerCase().includes(filter)) {
+                          foundStaffPaths.push({ type: 'regional', deptName: dept.name, staffNo: staff.staffNo });
+                      }
+                  });
+              }
+          });
+
+          // Search in branch managers
+          orgData.regions[0].branches.forEach(branch => {
+              if (branch.branchManager) {
+                  const bm = branch.branchManager;
+                  if (bm.name.toLowerCase().includes(filter) || bm.staffNo.toLowerCase().includes(filter) || bm.contact.includes(filter) || bm.nic.toLowerCase().includes(filter)) {
+                      foundStaffPaths.push({ type: 'branch-manager', branchAbbr: branch.abbr, staffNo: bm.staffNo });
+                  }
+              }
+              // Search in branch departments
+              branch.departments.forEach(dept => {
+                  dept.staff.forEach(staff => {
+                      if (staff.name.toLowerCase().includes(filter) || staff.staffNo.toLowerCase().includes(filter) || staff.contact.includes(filter) || staff.nic.toLowerCase().includes(filter)) {
+                          foundStaffPaths.push({ type: 'branch', branchAbbr: branch.abbr, deptName: dept.name, staffNo: staff.staffNo });
+                      }
+                  });
+              });
+          });
+
+          // Now, expand only the paths to the found staff
+          collapseAllBranchesDepts(); // Start by collapsing everything
+          collapseAllStaffLists();
+
+          foundStaffPaths.forEach(path => {
+              if (path.type === 'regional') {
+                  const deptDiv = document.querySelector(`#regMgrDepts .dept-box:contains("${path.deptName}")`);
+                  if (deptDiv) {
+                      document.getElementById('regMgrDepts').style.display = 'flex';
+                      const staffUl = deptDiv.querySelector('ul');
+                      if (staffUl) staffUl.classList.add('active');
+                  }
+              } else if (path.type === 'regional-sub') {
+                  const areaOfficeDiv = document.querySelector(`#regMgrDepts .dept-box:contains("${path.deptName}")`);
+                  if (areaOfficeDiv) {
+                      document.getElementById('regMgrDepts').style.display = 'flex';
+                      const areaOfficeUl = areaOfficeDiv.querySelector('ul');
+                      if (areaOfficeUl) {
+                          areaOfficeUl.classList.add('active');
+                          // Find and activate the specific sub-department's staff list if it exists
+                          const subDeptStaffUl = areaOfficeUl.querySelector(`.sub-dept-staff:contains("${path.subDeptName}")`);
+                          if (subDeptStaffUl) subDeptStaffUl.classList.add('active');
+                      }
+                  }
+              } else if (path.type === 'branch-manager') {
+                  const branchDiv = document.querySelector(`#branches-East .branch-box:contains("${path.branchAbbr}")`);
+                  if (branchDiv) {
+                      document.getElementById('branches-East').style.display = 'flex';
+                      const deptsContainer = branchDiv.querySelector('.depts-container');
+                      if (deptsContainer) {
+                          deptsContainer.style.display = 'flex';
+                          const bmDeptDiv = deptsContainer.querySelector('.dept-box:contains("Branch Manager")');
+                          if (bmDeptDiv) {
+                              const staffUl = bmDeptDiv.querySelector('ul');
+                              if (staffUl) staffUl.classList.add('active');
+                          }
+                      }
+                  }
+              } else if (path.type === 'branch') {
+                  const branchDiv = document.querySelector(`#branches-East .branch-box:contains("${path.branchAbbr}")`);
+                  if (branchDiv) {
+                      document.getElementById('branches-East').style.display = 'flex';
+                      const deptsContainer = branchDiv.querySelector('.depts-container');
+                      if (deptsContainer) {
+                          deptsContainer.style.display = 'flex';
+                          const deptDiv = deptsContainer.querySelector(`.dept-box:contains("${path.deptName}")`);
+                          if (deptDiv) {
+                              const staffUl = deptDiv.querySelector('ul');
+                              if (staffUl) staffUl.classList.add('active');
+                          }
+                      }
+                  }
+              }
+          });
       }
     }
 
-    // Toggle visibility of regional departments and branches
-    function toggleEast() {
-      const regMgrDepts = document.getElementById('regMgrDepts');
-      const branches = document.getElementById('branches-East');
-      const isHidden = regMgrDepts.style.display === 'none';
-
-      regMgrDepts.style.display = isHidden ? 'flex' : 'none';
-      branches.style.display = isHidden ? 'flex' : 'none';
-
-      // If hiding, also hide all sub-elements (department containers and staff lists)
-      if (!isHidden) {
-        regMgrDepts.querySelectorAll('ul').forEach(ul => ul.classList.remove('active'));
-        branches.querySelectorAll('.depts-container').forEach(dc => dc.style.display = 'none');
-        branches.querySelectorAll('ul').forEach(ul => ul.classList.remove('active'));
-      } else {
-         // If showing, ensure department containers are visible within branches
-         branches.querySelectorAll('.depts-container').forEach(dc => dc.style.display = 'flex');
-      }
-    }
-
-     // Toggle staff list visibility for the Regional Manager department
-    function toggleRegMgr() {
-      const regionalMgrDeptDiv = document.querySelector('#regMgrDepts .dept-box:first-child');
-      const ul = regionalMgrDeptDiv ? regionalMgrDeptDiv.querySelector('ul') : null;
-      if (ul) {
-        ul.classList.toggle('active');
-      }
-    }
-
-
-    // Toggle visibility of departments within a specific branch
-    function toggleBranch(branchAbbr) {
-      const deptsContainer = document.getElementById(`depts-${branchAbbr}`);
-      if (deptsContainer) {
-        const isHidden = deptsContainer.style.display === 'none';
-        deptsContainer.style.display = isHidden ? 'flex' : 'none';
-
-        // If hiding, also hide all staff lists within this branch's departments
-        if (!isHidden) {
-          deptsContainer.querySelectorAll('ul').forEach(ul => ul.classList.remove('active'));
-        }
-      }
-    }
-
-    // Toggle staff list visibility for a specific department (regional or in a branch)
-    function toggleStaff(regionName, deptName, branchAbbr) {
-      let staffUl = null;
-      const region = orgData.regions.find(r => r.name === regionName);
-
-      if (region) {
-        if (branchAbbr) {
-          const branch = region.branches.find(b => b.abbr === branchAbbr);
-          if (branch) {
-            // Use a more robust way to find the department div, e.g., by ID if available or by iterating
-            const deptDiv = document.querySelector(`#depts-${branchAbbr} .dept-box:contains("${deptName}")`);
-             staffUl = deptDiv ? deptDiv.querySelector('ul') : null;
-          }
-        } else {
-          const deptDiv = document.querySelector(`#regMgrDepts .dept-box:contains("${deptName}")`);
-          staffUl = deptDiv ? deptDiv.querySelector('ul') : null;
-        }
-      }
-
-      if (staffUl) {
-        staffUl.classList.toggle('active');
-      }
-    }
 
     // Show staff details in a popup
     function showStaffDetails(regionName, branchAbbr, staffNo) {
@@ -796,13 +928,31 @@
       let staff = null;
 
       if (region) {
-        if (branchAbbr) {
+        if (branchAbbr) { // Search in branches
           const branch = region.branches.find(b => b.abbr === branchAbbr);
           if (branch) {
-            staff = branch.departments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+            // Check branch manager first
+            if (branch.branchManager && branch.branchManager.staffNo === staffNo) {
+                staff = branch.branchManager;
+            } else {
+                // Then check staff in branch departments
+                staff = branch.departments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+            }
           }
-        } else {
-          staff = region.departments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+        } else { // Search in regional departments or Area Office sub-departments
+          // Check top-level regional departments (Regional Manager, SME HUB)
+          staff = region.departments.filter(d => d.type !== "container").flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+          if (!staff) {
+            // Check Area Office direct staff
+            const areaOffice = region.departments.find(d => d.name === "Area Office" && d.type === "container");
+            if (areaOffice && areaOffice.staff) {
+                staff = areaOffice.staff.find(s => s.staffNo === staffNo);
+            }
+            if (!staff && areaOffice && areaOffice.subDepartments) {
+              // Check Area Office sub-departments (Operation, Credit)
+              staff = areaOffice.subDepartments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+            }
+          }
         }
       }
 
@@ -857,6 +1007,7 @@
       branchSelect.innerHTML = '<option value="">Select Branch</option>'; // Reset branch options
 
       // Enable branch selection only for "Operation" and "Credit" departments
+      // These can be top-level Area Office sub-departments or branch departments
       if (dept === "Operation" || dept === "Credit") {
         branchSelect.disabled = false;
         orgData.regions[0].branches.forEach(branch => {
@@ -888,18 +1039,33 @@
       const region = orgData.regions[0]; // Assuming 'East' is the only region
 
       // Find the staff member based on the selected department and branch
-      if (branchAbbr) {
+      if (branchAbbr) { // If a branch is selected, search within that branch's departments
         const branch = region.branches.find(b => b.abbr === branchAbbr);
         if (branch) {
-          const targetDept = branch.departments.find(d => d.name === dept);
-          if (targetDept) {
-            staff = targetDept.staff.find(s => s.staffNo === staffNo);
+          // Check branch manager first
+          if (branch.branchManager && branch.branchManager.staffNo === staffNo && dept === "Branch Manager") { // Assuming "Branch Manager" is a selectable department
+              staff = branch.branchManager;
+          } else {
+              const targetDept = branch.departments.find(d => d.name === dept);
+              if (targetDept) {
+                staff = targetDept.staff.find(s => s.staffNo === staffNo);
+              }
           }
         }
-      } else {
-        const targetDept = region.departments.find(d => d.name === dept);
-        if (targetDept) {
-          staff = targetDept.staff.find(s => s.staffNo === staffNo);
+      } else { // If no branch selected, search in regional departments or Area Office sub-departments
+        const regionalDept = region.departments.find(d => d.name === dept);
+        if (regionalDept) {
+            if (regionalDept.type === "container" && regionalDept.subDepartments) {
+                // Search in Area Office's direct staff
+                staff = regionalDept.staff.find(s => s.staffNo === staffNo);
+                if (!staff) {
+                    // Search in Area Office's sub-departments
+                    staff = regionalDept.subDepartments.flatMap(d => d.staff).find(s => s.staffNo === staffNo);
+                }
+            } else {
+                // Search in regular regional department (e.g., Regional Manager, SME HUB)
+                staff = regionalDept.staff.find(s => s.staffNo === staffNo);
+            }
         }
       }
 
@@ -1067,7 +1233,7 @@
 
     // Add new staff member
     function addStaff() {
-      if (!validateForm()) return; // Validate form before adding
+      if (!validateForm()) return;
 
       const dept = document.getElementById('deptSelect').value;
       const branchAbbr = document.getElementById('branchSelectStaff').value;
@@ -1080,40 +1246,65 @@
       const dob = document.getElementById('staffDob').value.trim();
       const nic = document.getElementById('staffNic').value.trim();
 
-      let targetDepartment = null;
       const region = orgData.regions[0];
 
-      // Find the target department based on selected branch and department
-      if (branchAbbr) {
-        const branch = region.branches.find(b => b.abbr === branchAbbr);
-        if (branch) {
-          targetDepartment = branch.departments.find(d => d.name === dept);
-        }
-      } else {
-        targetDepartment = region.departments.find(d => d.name === dept);
+      // Handle Branch Manager separately
+      if (dept === "Branch Manager" && branchAbbr) {
+          const branch = region.branches.find(b => b.abbr === branchAbbr);
+          if (branch) {
+              if (!branch.branchManager || branch.branchManager.staffNo !== staffNo) {
+                  branch.branchManager = { staffNo, name: staffName, designation, address, email, contact, dob, nic };
+                  saveData();
+                  renderTree();
+                  clearForm();
+                  alert('Branch Manager added successfully!');
+              } else {
+                  alert('Error: Branch Manager with this Staff No already exists for this branch.');
+              }
+          } else {
+              alert('Error: Branch not found for Branch Manager.');
+          }
+          return;
       }
 
-      if (targetDepartment) {
-        // Check if staff number already exists in the target department
-        const existingStaff = targetDepartment.staff.find(s => s.staffNo === staffNo);
+      let targetCollection = null; // This will point to the staff array of the correct department/sub-department
+
+      if (branchAbbr) { // If a branch is selected, add staff to a department within that branch
+        const branch = region.branches.find(b => b.abbr === branchAbbr);
+        if (branch) {
+          targetCollection = branch.departments.find(d => d.name === dept);
+        }
+      } else { // If no branch selected, add staff to a regional department or Area Office sub-department
+        const regionalDept = region.departments.find(d => d.name === dept);
+        if (regionalDept) {
+            if (regionalDept.type === "container" && regionalDept.subDepartments) {
+                // For Area Office, staff is added to its direct staff array
+                targetCollection = regionalDept; // Add to Area Office's direct staff
+            } else {
+                targetCollection = regionalDept; // For Regional Manager, SME HUB
+            }
+        }
+      }
+
+      if (targetCollection) {
+        const existingStaff = targetCollection.staff.find(s => s.staffNo === staffNo);
         if (!existingStaff) {
-          // Add new staff member
-          targetDepartment.staff.push({ staffNo, name: staffName, designation, address, email, contact, dob, nic });
-          saveData(); // Save changes to local storage
-          renderTree(); // Re-render the tree
-          clearForm(); // Clear the form
+          targetCollection.staff.push({ staffNo, name: staffName, designation, address, email, contact, dob, nic });
+          saveData();
+          renderTree();
+          clearForm();
           alert('Staff added successfully!');
         } else {
           alert('Error: Staff number already exists in this department/branch.');
         }
       } else {
-        alert('Error: Department or Branch not found.');
+        alert('Error: Department or Branch not found for staff addition.');
       }
     }
 
     // Update existing staff member details
     function updateStaff() {
-      if (!validateForm()) return; // Validate form before updating
+      if (!validateForm()) return;
 
       const dept = document.getElementById('deptSelect').value;
       const branchAbbr = document.getElementById('branchSelectStaff').value;
@@ -1126,34 +1317,54 @@
       const dob = document.getElementById('staffDob').value.trim();
       const nic = document.getElementById('staffNic').value.trim();
 
-      let targetDepartment = null;
       const region = orgData.regions[0];
 
-      // Find the target department
+      // Handle Branch Manager separately
+      if (dept === "Branch Manager" && branchAbbr) {
+          const branch = region.branches.find(b => b.abbr === branchAbbr);
+          if (branch && branch.branchManager && branch.branchManager.staffNo === staffNo) {
+              branch.branchManager = { staffNo, name: staffName, designation, address, email, contact, dob, nic };
+              saveData();
+              renderTree();
+              clearForm();
+              alert('Branch Manager updated successfully!');
+          } else {
+              alert('Error: Branch Manager not found for this branch and staff number.');
+          }
+          return;
+      }
+
+      let targetCollection = null;
+
       if (branchAbbr) {
         const branch = region.branches.find(b => b.abbr === branchAbbr);
         if (branch) {
-          targetDepartment = branch.departments.find(d => d.name === dept);
+          targetCollection = branch.departments.find(d => d.name === dept);
         }
       } else {
-        targetDepartment = region.departments.find(d => d.name === dept);
+        const regionalDept = region.departments.find(d => d.name === dept);
+        if (regionalDept) {
+            if (regionalDept.type === "container" && regionalDept.subDepartments) {
+                targetCollection = regionalDept; // Update Area Office direct staff
+            } else {
+                targetCollection = regionalDept; // For Regional Manager, SME HUB
+            }
+        }
       }
 
-      if (targetDepartment) {
-        // Find the index of the staff member to update
-        const staffIndex = targetDepartment.staff.findIndex(s => s.staffNo === staffNo);
+      if (targetCollection) {
+        const staffIndex = targetCollection.staff.findIndex(s => s.staffNo === staffNo);
         if (staffIndex !== -1) {
-          // Update staff details
-          targetDepartment.staff[staffIndex] = { staffNo, name: staffName, designation, address, email, contact, dob, nic };
-          saveData(); // Save changes
-          renderTree(); // Re-render the tree
-          clearForm(); // Clear the form
+          targetCollection.staff[staffIndex] = { staffNo, name: staffName, designation, address, email, contact, dob, nic };
+          saveData();
+          renderTree();
+          clearForm();
           alert('Staff updated successfully!');
         } else {
           alert('Error: Staff not found in this department/branch.');
         }
       } else {
-        alert('Error: Department or Branch not found.');
+        alert('Error: Department or Branch not found for staff update.');
       }
     }
 
@@ -1168,33 +1379,54 @@
         return;
       }
 
-      let targetDepartment = null;
       const region = orgData.regions[0];
+      let deleted = false;
 
-      // Find the target department
-      if (branchAbbr) {
-        const branch = region.branches.find(b => b.abbr === branchAbbr);
-        if (branch) {
-          targetDepartment = branch.departments.find(d => d.name === dept);
-        }
+      // Handle Branch Manager separately
+      if (dept === "Branch Manager" && branchAbbr) {
+          const branch = region.branches.find(b => b.abbr === branchAbbr);
+          if (branch && branch.branchManager && branch.branchManager.staffNo === staffNo) {
+              branch.branchManager = null; // Set to null or remove property
+              deleted = true;
+          } else {
+              alert('Error: Branch Manager not found for this branch and staff number.');
+          }
       } else {
-        targetDepartment = region.departments.find(d => d.name === dept);
+          let targetCollection = null;
+          if (branchAbbr) {
+            const branch = region.branches.find(b => b.abbr === branchAbbr);
+            if (branch) {
+              targetCollection = branch.departments.find(d => d.name === dept);
+            }
+          } else {
+            const regionalDept = region.departments.find(d => d.name === dept);
+            if (regionalDept) {
+                if (regionalDept.type === "container" && regionalDept.subDepartments) {
+                    targetCollection = regionalDept; // Delete from Area Office direct staff
+                } else {
+                    targetCollection = regionalDept; // For Regional Manager, SME HUB
+                }
+            }
+          }
+
+          if (targetCollection) {
+            const initialLength = targetCollection.staff.length;
+            targetCollection.staff = targetCollection.staff.filter(s => s.staffNo !== staffNo);
+            if (targetCollection.staff.length < initialLength) {
+              deleted = true;
+            } else {
+              alert('Staff not found in this department/branch.');
+            }
+          } else {
+            alert('Error: Department or Branch not found for staff deletion.');
+          }
       }
 
-      if (targetDepartment) {
-        const initialLength = targetDepartment.staff.length;
-        // Filter out the staff member to delete
-        targetDepartment.staff = targetDepartment.staff.filter(s => s.staffNo !== staffNo);
-        if (targetDepartment.staff.length < initialLength) {
-          saveData(); // Save changes
-          renderTree(); // Re-render the tree
-          clearForm(); // Clear the form
+      if (deleted) {
+          saveData();
+          renderTree();
+          clearForm();
           alert('Staff deleted successfully!');
-        } else {
-          alert('Staff not found in this department/branch.');
-        }
-      } else {
-        alert('Error: Department or Branch not found.');
       }
     }
 
@@ -1206,88 +1438,114 @@
         const reader = new FileReader();
         reader.onload = function(e) {
           const text = e.target.result;
-          // Split into rows, then split each row by comma and trim whitespace
           const rows = text.split('\n').map(row => row.split(',').map(cell => cell.trim()));
 
-          if (rows.length < 2) { // Expecting at least a header row and one data row
+          if (rows.length < 2) {
             alert("CSV file is empty or malformed. Expected header and data.");
-            fileInput.value = ''; // Clear the file input
-            return;
-          }
-
-          // Assuming CSV format:
-          // Row 0: Department,BranchAbbr (e.g., "Operation,TCO" or "Regional Manager,")
-          // Row 1: Header for staff data (e.g., "Name,Address,Email,Contact,DOB,StaffNo,NIC,Designation") - This row is skipped in processing
-          // Row 2 onwards: Staff data - Order should match the header
-
-          const headerInfo = rows[0];
-          const deptNameFromCSV = headerInfo[0];
-          const branchAbbrFromCSV = headerInfo[1] || ''; // Branch Abbr can be empty for regional depts
-
-          let targetDepartment = null;
-          const region = orgData.regions[0]; // Assuming 'East' is the only region
-
-          // Find or create the target department based on CSV header
-          if (branchAbbrFromCSV) {
-            let branch = region.branches.find(b => b.abbr === branchAbbrFromCSV);
-            if (!branch) {
-              // If branch from CSV doesn't exist, create a new one.
-              // Note: This creates a branch with the abbr as name and default departments.
-              // You might want a more robust way to handle new branches (e.g., another CSV for branches).
-              branch = { abbr: branchAbbrFromCSV, name: branchAbbrFromCSV, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] };
-              region.branches.push(branch);
-              console.warn(`Branch ${branchAbbrFromCSV} not found, adding it with default departments.`);
-            }
-            targetDepartment = branch.departments.find(d => d.name === deptNameFromCSV);
-            if (!targetDepartment) {
-               // If department doesn't exist in the branch, add it
-              targetDepartment = { name: deptNameFromCSV, staff: [] };
-              branch.departments.push(targetDepartment);
-              console.warn(`Department "${deptNameFromCSV}" not found in branch "${branchAbbrFromCSV}", adding it.`);
-            }
-          } else {
-            targetDepartment = region.departments.find(d => d.name === deptNameFromCSV);
-            if (!targetDepartment) {
-              // If department doesn't exist in the region, add it
-              targetDepartment = { name: deptNameFromCSV, staff: [] };
-              region.departments.push(targetDepartment);
-              console.warn(`Regional Department "${deptNameFromCSV}" not found, adding it.`);
-            }
-          }
-
-          if (!targetDepartment) {
-            alert(`Error: Could not determine target department from CSV header: "${deptNameFromCSV}" in "${branchAbbrFromCSV}".`);
             fileInput.value = '';
             return;
           }
 
-          const staffDataStartIndex = 2; // Data starts from the third row (index 2)
+          // CSV format:
+          // Row 0: Department,BranchAbbr,SubDepartment (e.g., "Operation,TCO," or "Area Office,,Operation")
+          // Row 1: Header for staff data (skipped)
+          // Row 2 onwards: Staff data (Name,Address,Email,Contact,DOB,StaffNo,NIC,Designation)
+
+          const headerInfo = rows[0];
+          const deptNameFromCSV = headerInfo[0];
+          const branchAbbrFromCSV = headerInfo[1] || '';
+          const subDeptNameFromCSV = headerInfo[2] || ''; // For Area Office sub-departments
+
+          let targetCollection = null;
+          const region = orgData.regions[0];
+
+          if (deptNameFromCSV === "Branch Manager" && branchAbbrFromCSV) {
+              const branch = region.branches.find(b => b.abbr === branchAbbrFromCSV);
+              if (!branch) {
+                  alert(`Error: Branch ${branchAbbrFromCSV} not found for Branch Manager.`);
+                  fileInput.value = '';
+                  return;
+              }
+              // For Branch Manager, we'll directly set the branchManager property
+              const staffDataStartIndex = 2;
+              if (rows.length > staffDataStartIndex) {
+                  const staffData = rows[staffDataStartIndex];
+                  if (staffData.length >= 8) {
+                      const [name, address, email, contact, dob, staffNo, nic, designation] = staffData;
+                      if (staffNo && name && designation) {
+                          branch.branchManager = { staffNo, name, designation, address, email, contact, dob, nic };
+                          saveData();
+                          renderTree();
+                          clearForm();
+                          alert('Branch Manager uploaded successfully!');
+                          fileInput.value = '';
+                          return;
+                      }
+                  }
+              }
+              alert('Error: Invalid CSV format for Branch Manager. Expected staff data on row 2.');
+              fileInput.value = '';
+              return;
+          }
+
+
+          if (branchAbbrFromCSV) { // If a branch is specified, target a department within that branch
+            let branch = region.branches.find(b => b.abbr === branchAbbrFromCSV);
+            if (!branch) {
+              branch = { abbr: branchAbbrFromCSV, name: branchAbbrFromCSV, branchManager: null, departments: [{ name: "Operation", staff: [] }, { name: "Credit", staff: [] }] };
+              region.branches.push(branch);
+              console.warn(`Branch ${branchAbbrFromCSV} not found, adding it with default departments.`);
+            }
+            targetCollection = branch.departments.find(d => d.name === deptNameFromCSV);
+            if (!targetCollection) {
+              targetCollection = { name: deptNameFromCSV, staff: [] };
+              branch.departments.push(targetCollection);
+              console.warn(`Department "${deptNameFromCSV}" not found in branch "${branchAbbrFromCSV}", adding it.`);
+            }
+          } else { // No branch specified, target a regional department or Area Office sub-department
+            const regionalDept = region.departments.find(d => d.name === deptNameFromCSV);
+            if (regionalDept) {
+                if (regionalDept.type === "container" && regionalDept.subDepartments && subDeptNameFromCSV) {
+                    // This handles Area Office sub-departments (e.g., "Area Office,,Operation")
+                    targetCollection = regionalDept.subDepartments.find(d => d.name === subDeptNameFromCSV);
+                    if (!targetCollection) {
+                        targetCollection = { name: subDeptNameFromCSV, staff: [] };
+                        regionalDept.subDepartments.push(targetCollection);
+                        console.warn(`Sub-department "${subDeptNameFromCSV}" not found in Area Office, adding it.`);
+                    }
+                } else if (regionalDept.type === "container" && !subDeptNameFromCSV) {
+                    // This handles Area Office direct staff (e.g., "Area Office,,")
+                    targetCollection = regionalDept;
+                }
+                else {
+                    targetCollection = regionalDept; // For Regional Manager, SME HUB
+                }
+            } else {
+              targetCollection = { name: deptNameFromCSV, staff: [] };
+              region.departments.push(targetCollection);
+              console.warn(`Regional Department "${deptNameFromCSV}" not found, adding it.`);
+            }
+          }
+
+          if (!targetCollection) {
+            alert(`Error: Could not determine target department from CSV header: "${deptNameFromCSV}" in "${branchAbbrFromCSV}" (sub-department: ${subDeptNameFromCSV}).`);
+            fileInput.value = '';
+            return;
+          }
+
+          const staffDataStartIndex = 2;
           let newStaffCount = 0;
           let skippedStaffCount = 0;
 
-          // Process staff data from the CSV
           for (let i = staffDataStartIndex; i < rows.length; i++) {
             const staffData = rows[i];
-            // Ensure enough columns for all staff properties based on expected order
             if (staffData.length >= 8) {
-              // Map CSV columns to staff object properties based on the expected order in the header row (though we are skipping header row 1)
-              // Assuming the data order in CSV is: Name,Address,Email,Contact,DOB,StaffNo,NIC,Designation
-              const name = staffData[0];
-              const address = staffData[1];
-              const email = staffData[2];
-              const contact = staffData[3];
-              const dob = staffData[4];
-              const staffNo = staffData[5];
-              const nic = staffData[6];
-              const designation = staffData[7];
+              const [name, address, email, contact, dob, staffNo, nic, designation] = staffData;
 
-
-              // Basic validation for critical fields from CSV
               if (staffNo && name && designation) {
-                const existingStaff = targetDepartment.staff.find(s => s.staffNo === staffNo);
+                const existingStaff = targetCollection.staff.find(s => s.staffNo === staffNo);
                 if (!existingStaff) {
-                  // Add new staff member if staff number doesn't exist
-                  targetDepartment.staff.push({ staffNo, name, designation, address, email, contact, dob, nic });
+                  targetCollection.staff.push({ staffNo, name, designation, address, email, contact, dob, nic });
                   newStaffCount++;
                 } else {
                   console.warn(`Skipping staff with Staff No ${staffNo} (Name: ${name}) from CSV as it already exists.`);
@@ -1303,13 +1561,13 @@
             }
           }
 
-          saveData(); // Save changes
-          renderTree(); // Re-render the tree
-          populateBranchSelect(); // Re-populate branch select after potential new branch creation
-          fileInput.value = ''; // Clear the file input
+          saveData();
+          renderTree();
+          populateBranchSelect();
+          fileInput.value = '';
           alert(`CSV upload complete. Added ${newStaffCount} staff members. Skipped ${skippedStaffCount} (existing or malformed rows).`);
         };
-        reader.readAsText(file); // Read the file as text
+        reader.readAsText(file);
       } else {
         alert('Please select a CSV file to upload.');
       }
@@ -1334,22 +1592,13 @@
       document.getElementById('branches-East').style.display = 'flex';
 
       // Show all department containers within branches
-      document.querySelectorAll('.branch-box').forEach(div => {
-        const deptsContainer = div.querySelector('.depts-container');
-        if (deptsContainer) {
-          deptsContainer.style.display = 'flex';
-          // Show all staff lists within these departments
-          deptsContainer.querySelectorAll('.dept-box').forEach(deptDiv => {
-            const ul = deptDiv.querySelector('ul');
-            if (ul) ul.classList.add('active');
-          });
-        }
+      document.querySelectorAll('.branches-container .depts-container').forEach(deptsContainer => {
+        deptsContainer.style.display = 'flex';
       });
 
-      // Show all staff lists for regional departments
-      document.querySelectorAll('#regMgrDepts .dept-box').forEach(deptDiv => {
-        const ul = deptDiv.querySelector('ul');
-        if (ul) ul.classList.add('active');
+      // Show all staff lists for all departments (regional and branch)
+      document.querySelectorAll('ul').forEach(ul => {
+        ul.classList.add('active');
       });
 
       renderTree(); // Re-render to ensure all elements are present and correctly structured
